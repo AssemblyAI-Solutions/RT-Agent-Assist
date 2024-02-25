@@ -7,12 +7,14 @@ import Transcript from '../components/transcript'
 // import SentimentChart from '../components/sentiment'
 import axios from 'axios'
 import ClipLoader from "react-spinners/ClipLoader"
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root'); // assuming 'root' is the id of your main app element
 
 import { useEffect, useState, useRef, useMemo } from 'react'
 import LemurOutput from '../components/lemur_output'
 
 export default function Home() {
-
   // when websocket is open and sending data
   const [isTranscribing, setIsTranscribing] = useState(false);
   
@@ -56,8 +58,59 @@ export default function Home() {
   // Lemur API calls loading state
   const [lemurLoad, setLemurLoad] = useState(false);
 
-  useEffect(() => {
+  // Modal state for editing prompts
+  const [modalIsOpen, setIsOpen] = useState(false);
 
+  // Custom prompts
+  const [notesPrompt, setNotesPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to take dilligent notes for the agent during the phone call.
+  I will provide you will a live transcript of the call and the previous notes you took.
+
+  Instructions:
+  - Return your notes in a JSON array like this: {"notes": ["note 1", "note 2", "note 3"]}.
+  - Return the JSON and no preamble or sign-off.
+  - Only include notes about the customer and not about the agent's business.
+  - Do not repeat new notes that are already included in the previous notes.
+  `);
+  const [tasksPrompt, setTasksPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to make suggestions for the agent during the phone call.
+  I will provide you will a live transcript of the call and a list of the previous suggestions you made.
+
+  You must only give the following suggestions if one of the following rules is true:
+  - If customer says they live in an apartment or home, suggest that the agent ask if they own or rent.
+  - If a customer says they are using an alternative service that isn't AT&T,suggest that the agent ask them what they don't like about their current service.
+  - If a customer wants internet or cable service, suggest that the agent ask them if they'd be interested in bundling other services.
+  
+  Instructions:
+  - Only include a suggestion if it meets the given rules.
+  - Do not repeat suggestions you have already made.
+  - Provide your suggestions in an JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.
+  - Return the JSON and no preamble or sign-off.
+  - If you have no suggestions, return an empty array.
+`);
+
+  // Modal text value
+  const [notesTextArea, setNotesTextArea] = useState(notesPrompt);
+  const [tasksTextArea, setTasksTextArea] = useState(tasksPrompt);
+
+  const modalStyle = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      width: '80%', // Set a width for the modal
+      height: '60%', // Set a height for the modal
+      display: 'flex', // Use flexbox for layout
+      flexDirection: 'column', // Stack items vertically
+      alignItems: 'center', // Center items horizontally
+      justifyContent: 'space-around', // Distribute space evenly
+      padding: '20px', // Add some padding
+      border: ''
+    },
+  };
+
+  useEffect(() => {
     // Fetch temp token from AAI
     fetchToken()
 
@@ -118,7 +171,7 @@ export default function Home() {
   function lemurNotes(t) {
     setLemurLoad(true);
 
-    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: notes }) };
+    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: notes, prompt: notesPrompt }) };
     fetch('/api/lemur_notes', options)
     .then(response => response.json())
     .then(response => {
@@ -139,7 +192,7 @@ export default function Home() {
   function lemurTasks(t) {
     setLemurLoad(true);
 
-    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: tasks }) };
+    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: tasks, prompt: notesPrompt }) };
     fetch('/api/lemur_tasks', options)
     .then(response => response.json())
     .then(response => {
@@ -489,6 +542,13 @@ export default function Home() {
     createWebsocket(rightChannelFile, rightSocketRef);
   }
 
+  // Prompt edit button click
+  function promptEditClick(title) {
+    console.log('prompt edit clicked')
+    console.log(title)
+    setIsOpen(true)
+  }
+
   // Start/stop transcription button component
   function startButton() {
     return <div>
@@ -499,7 +559,7 @@ export default function Home() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} id='root'>
       <Head>
         <title>Real-Time Agent Assist Demo</title>
         <meta name="description" content="Generated for demo purposes by AssemblyAI Solutions" />
@@ -557,12 +617,52 @@ export default function Home() {
               <input style={{ paddingLeft: 10 }} className="custom-file-input" type="file" onChange={(e) => handleFileUpload(e, 'right')} />
             }
             {selectedCall == 3 && rightAudioComponent}
-            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={tasks}></LemurOutput>
-            <LemurOutput title={'AI Notes'} loading={lemurLoad} notes={notes}></LemurOutput>
+            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={tasks} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
+            <LemurOutput title={'AI Notes'} loading={lemurLoad} notes={notes} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
           </div>
         </div>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={() => setIsOpen(false)}
+          style={modalStyle}
+        >
+          <p style={{fontSize: 15, fontWeight: 600, marginBottom: 20, color: 'black'}}>Edit Notes Prompt</p>
+          <textarea 
+            value={notesTextArea} 
+            onChange={e => setNotesTextArea(e.target.value)} 
+            style={{width: '100%', height: '200px', backgroundColor: 'white', color: 'black'}}
+          />
+          <p onClick={(e) => {
+            // Here you can handle the prompt update logic
+            console.log('Updated prompt:', notesTextArea);
+            if (notesTextArea && notesTextArea != '') {
+              setNotesPrompt(notesTextArea);
+              alert('Prompt updated, make sure the prompt includes instructions to return notes in a JSON array format like this: {"notes": ["note 1", "note 2", "note 3"]}.');
+            }
+          }} style={{fontSize: 12, color: 'white', backgroundColor: 'black', padding: 5, borderRadius: 5, cursor: 'pointer'}}
+          >
+            Update Notes Prompt
+          </p>
+          <p style={{fontSize: 15, fontWeight: 600, marginBottom: 20, color: 'black'}}>Edit Suggestions Prompt</p>
+          <textarea 
+            value={tasksTextArea} 
+            onChange={e => setTasksTextArea(e.target.value)} 
+            style={{width: '100%', height: '200px', backgroundColor: 'white', color: 'black'}}
+          />
+          <p onClick={(e) => {
+            // Here you can handle the prompt update logic
+            console.log('Updated prompt:', tasksTextArea);
+            if (tasksTextArea && tasksTextArea != '') {
+              setTasksPrompt(tasksTextArea);
+              alert('Prompt updated, make sure the prompt includes instructions to return suggestions in a JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.');
+            }
+          }} style={{fontSize: 12, color: 'white', backgroundColor: 'black', padding: 5, borderRadius: 5, cursor: 'pointer'}}
+          >
+            Update Suggestions Prompt
+          </p>
+          <p style={{fontSize: 12, color: 'black', cursor: 'pointer'}} onClick={() => setIsOpen(false)}>Close</p>
+        </Modal>
       </main>
-
       <footer className={styles.footer}>
       </footer>
     </div>

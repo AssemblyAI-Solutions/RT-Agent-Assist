@@ -1,8 +1,9 @@
-const LemurOutput = ({ title, notes }) => {
+const LemurOutput = ({ title, notes, promptEditClick }) => {
     return (
         <div style={styles.mainDiv}>
             <p style={styles.componentHeader}>
                 {title || 'AI Notes'}
+                <span onClick={() => promptEditClick(title)} style={styles.editButton}>Edit Prompt</span>
             </p>
             <div style={styles.divider}></div>
             <p style={getNoteStyle(notes)}>
@@ -55,6 +56,10 @@ const styles = {
         fontWeight: 600,
         paddingRight: 20,
         paddingLeft: 25,
+        flexDirection: 'row',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     divider: {
         width: '100%', 
@@ -65,6 +70,12 @@ const styles = {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center'
+    },
+    editButton: {
+        color: '#00000040', 
+        cursor: 'pointer', 
+        fontSize: 10,
+        fontWeight: 500,
     }
 }
 
