@@ -19,8 +19,8 @@ function generateBubbles({ json }) {
     // sort json by start time
     const sortedTranscript = json.sort((a, b) => a.audio_start - b.audio_start)
 
-    return sortedTranscript.map(utt => (
-        <div style={getBubbleStyle(utt.speaker)}>
+    return sortedTranscript.map((utt, index) => (
+        <div key={index} style={getBubbleStyle(utt.speaker)}>
             <div style={styles.innerDiv}>
                 <p style={styles.speakerTime}>{utt.speaker == 'A' ? 'Agent' : 'CUSTOMER'}: {millisToMinutesAndSeconds(utt.audio_start)} – {millisToMinutesAndSeconds(utt.audio_end)}</p>
                 <p style={styles.uttText}>{utt.text}</p>
