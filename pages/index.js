@@ -557,8 +557,8 @@ export default function Home() {
               <input style={{ paddingLeft: 10 }} className="custom-file-input" type="file" onChange={(e) => handleFileUpload(e, 'right')} />
             }
             {selectedCall == 3 && rightAudioComponent}
-            <LemurOutput title={'AI Notes'} loading={lemurLoad} notes={tasks}></LemurOutput>
-            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={notes}></LemurOutput>
+            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={tasks}></LemurOutput>
+            <LemurOutput title={'AI Notes'} loading={lemurLoad} notes={notes}></LemurOutput>
           </div>
         </div>
       </main>
