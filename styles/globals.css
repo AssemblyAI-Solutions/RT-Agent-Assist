@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter');
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: Inter;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+body {
+  color: white;
+  background: linear-gradient(-40.31deg, hsl(217, 77%, 60%) 0%, #2184e1 100%);
+  scrollbar-color: rgba(0, 0, 0, 0.151) #ffffff10; /* Change this line */
+  scrollbar-width: thin; /* Change this line */
+}
+
+input[type="file"].custom-file-input::-webkit-file-upload-button {
+  padding: 8px;
+  background: #ffffff20;
+  color: white;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="file"].custom-file-input::-webkit-file-upload-button:hover {
+  background: #ffffff10;
+}
+
+/* This will change the scrollbar color for the entire page */
+body::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.rhap_container {
+  box-shadow: none !important;
+}
+
+
+.rhap_progress-indicator {
+  background-color: #ffffff !important;
+  width: 15px !important;
+  height: 15px !important;
+  top: -5px !important;
+}
+
+.rhap_progress-filled {
+  background-color: #00000020 !important;
+}
+
+.rhap_main-controls-button {
+  color: #00000060 !important;
+}
