@@ -144,7 +144,7 @@ export default function Home() {
     }
   };
 
-  // Lemur API calls, peroiodically when the transcript length is a multiple of 10
+  // Lemur API calls, peroiodically when the transcript length is a multiple of 5
   useEffect(() => {
     if (lemurLoad) return;
     if (fullTranscript.length === 0) {
@@ -153,7 +153,7 @@ export default function Home() {
 
     var filteredTranscript = filterTranscript(fullTranscript);
 
-    if (filteredTranscript.length % 10 === 0 && filteredTranscript.length > 0) {
+    if (filteredTranscript.length % 5 === 0 && filteredTranscript.length > 0) {
       if (currentAudioTime !== 3600) {
         if (filteredTranscript.length === 0) {
           return;
