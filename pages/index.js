@@ -192,7 +192,7 @@ export default function Home() {
   function lemurTasks(t) {
     setLemurLoad(true);
 
-    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: tasks, prompt: notesPrompt }) };
+    const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: tasks, prompt: tasksPrompt }) };
     fetch('/api/lemur_tasks', options)
     .then(response => response.json())
     .then(response => {
