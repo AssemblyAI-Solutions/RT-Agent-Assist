@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import logo from '../public/echo_logo.svg'
+import logo from '../public/AssemblyAI_White.png'
 import Audio from '../components/audio'
 import Transcript from '../components/transcript'
 // import SentimentChart from '../components/sentiment'
@@ -586,7 +586,7 @@ export default function Home() {
       <main className={styles.main}>
         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 40, paddingRight: 30, marginTop: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: 20 }}>
-            <Image src={logo} height={50} />
+            <Image src={logo} height={30} />
           </div>
           <p style={{ color: '#ffffff90' }}>Real-Time Agent Assist</p>
         </div>
