@@ -31,6 +31,14 @@ export default async function handler(req, res) {
     var finalPrompt = ''
     if (prompt && prompt != '') {
         finalPrompt = prompt
+        finalPrompt += `
+        I will provide you will a live transcript of the call and the previous notes you took.
+
+        Instructions:
+        - Return your notes in a JSON array like this: {"notes": ["note 1", "note 2", "note 3"]}.
+        - Return the JSON and no preamble or sign-off.
+        - Only include notes about the customer and not about the agent's business.
+        - Do not repeat new notes that are already included in the previous notes.`
     }
     else {
       finalPrompt = `You are a helpful customer service agent assistant. Your job is to take dilligent notes for the agent during the phone call.

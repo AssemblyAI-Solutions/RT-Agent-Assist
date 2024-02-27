@@ -31,6 +31,14 @@ export default async function handler(req, res) {
     var finalPrompt = ''
     if (prompt && prompt != '') {
         finalPrompt = prompt
+        finalPrompt += `
+        I will provide you will a live transcript of the call and a list of the previous suggestions you made.
+  
+        Instructions:
+        - Provide your suggestions in an JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.
+        - Return the JSON and no preamble or sign-off.
+        - Do not repeat suggestions you have already made.
+        - If you have no suggestions, return an empty array.`
     }
     else {
       finalPrompt = `You are a helpful customer service agent assistant. Your job is to make suggestions for the agent during the phone call.

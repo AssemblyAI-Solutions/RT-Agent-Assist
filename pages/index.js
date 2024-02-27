@@ -62,30 +62,13 @@ export default function Home() {
   const [modalIsOpen, setIsOpen] = useState(false);
 
   // Custom prompts
-  const [notesPrompt, setNotesPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to take dilligent notes for the agent during the phone call.
-  I will provide you will a live transcript of the call and the previous notes you took.
-
-  Instructions:
-  - Return your notes in a JSON array like this: {"notes": ["note 1", "note 2", "note 3"]}.
-  - Return the JSON and no preamble or sign-off.
-  - Only include notes about the customer and not about the agent's business.
-  - Do not repeat new notes that are already included in the previous notes.
-  `);
-  const [tasksPrompt, setTasksPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to make suggestions for the agent during the phone call.
-  I will provide you will a live transcript of the call and a list of the previous suggestions you made.
-
-  You must only give the following suggestions if one of the following rules is true:
+  const [notesPrompt, setNotesPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to take dilligent notes for the agent during the phone call.`);
+  const [tasksPrompt, setTasksPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to make suggestions to the agent during the phone call.
+  
+  Focus on the following rules for providing suggestions:
   - If customer says they live in an apartment or home, suggest that the agent ask if they own or rent.
   - If a customer says they are using an alternative service that isn't AT&T,suggest that the agent ask them what they don't like about their current service.
-  - If a customer wants internet or cable service, suggest that the agent ask them if they'd be interested in bundling other services.
-  
-  Instructions:
-  - Only include a suggestion if it meets the given rules.
-  - Do not repeat suggestions you have already made.
-  - Provide your suggestions in an JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.
-  - Return the JSON and no preamble or sign-off.
-  - If you have no suggestions, return an empty array.
-`);
+  - If a customer wants internet or cable service, suggest that the agent ask them if they'd be interested in bundling other services.`);
 
   // Modal text value
   const [notesTextArea, setNotesTextArea] = useState(notesPrompt);
@@ -637,7 +620,7 @@ export default function Home() {
             console.log('Updated prompt:', notesTextArea);
             if (notesTextArea && notesTextArea != '') {
               setNotesPrompt(notesTextArea);
-              alert('Prompt updated, make sure the prompt includes instructions to return notes in a JSON array format like this: {"notes": ["note 1", "note 2", "note 3"]}.');
+              alert('Prompt updated');
             }
           }} style={{fontSize: 12, color: 'white', backgroundColor: 'black', padding: 5, borderRadius: 5, cursor: 'pointer'}}
           >
@@ -654,7 +637,7 @@ export default function Home() {
             console.log('Updated prompt:', tasksTextArea);
             if (tasksTextArea && tasksTextArea != '') {
               setTasksPrompt(tasksTextArea);
-              alert('Prompt updated, make sure the prompt includes instructions to return suggestions in a JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.');
+              alert('Prompt updated');
             }
           }} style={{fontSize: 12, color: 'white', backgroundColor: 'black', padding: 5, borderRadius: 5, cursor: 'pointer'}}
           >
