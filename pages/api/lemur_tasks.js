@@ -7,7 +7,7 @@ const client = new AssemblyAI({
 });
 
 export default async function handler(req, res) {
-    const { transcript } = req.body;
+    var { transcript } = req.body;
     const { previousNotes } = req.body;
     const { prompt } = req.body;
 
@@ -17,6 +17,8 @@ export default async function handler(req, res) {
     }
     // get text from the transcript
     var inputText = ''
+
+    transcript = transcript.sort((a, b) => a.audio_start - b.audio_start)
 
     for (var i = 0; i < transcript.length; i++) {
         var utt = transcript[i]

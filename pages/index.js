@@ -13,6 +13,8 @@ Modal.setAppElement('#root'); // assuming 'root' is the id of your main app elem
 
 import { useEffect, useState, useRef, useMemo } from 'react'
 import LemurOutput from '../components/lemur_output'
+import SentimentChart from '../components/sentiment'
+import Breakdown from '../components/breakdown'
 
 export default function Home() {
   // when websocket is open and sending data
@@ -143,9 +145,11 @@ export default function Home() {
         }
         lemurNotes(filteredTranscript);
         lemurTasks(filteredTranscript);
+        lemurSentiment(filteredTranscript);
       } else {
         lemurNotes(fullTranscript);
         lemurTasks(fullTranscript);
+        lemurSentiment(fullTranscript);
       }
     }
   }, [fullTranscript]);
@@ -600,7 +604,9 @@ export default function Home() {
               <input style={{ paddingLeft: 10 }} className="custom-file-input" type="file" onChange={(e) => handleFileUpload(e, 'right')} />
             }
             {selectedCall == 3 && rightAudioComponent}
-            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={tasks} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
+            <SentimentChart data={sentiment} width={750} height={200}></SentimentChart>
+            {/* <Breakdown json={sentiment}></Breakdown> */}
+            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={tasks} checkboxes={true} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
             <LemurOutput title={'AI Notes'} loading={lemurLoad} notes={notes} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
           </div>
         </div>

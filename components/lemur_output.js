@@ -1,4 +1,8 @@
-const LemurOutput = ({ title, notes, promptEditClick }) => {
+import { useState } from 'react'
+
+const LemurOutput = ({ title, notes, promptEditClick, checkboxes=false }) => {
+    const [checkedP, setCheckedP] = useState([]);
+
     return (
         <div style={styles.mainDiv}>
             <p style={styles.componentHeader}>
@@ -6,34 +10,79 @@ const LemurOutput = ({ title, notes, promptEditClick }) => {
                 <span onClick={() => promptEditClick(title)} style={styles.editButton}>Edit Prompt</span>
             </p>
             <div style={styles.divider}></div>
-            <p style={getNoteStyle(notes)}>
+            {!checkboxes && <div style={getNoteStyle(notes)}>
                 {notes && notes.length > 0 ? formatNotes(notes) : 'No new items. Listening...'}
-            </p>
+            </div>}
+            {checkboxes && <div style={getCheckboxStyle(notes)}>
+                {notes && notes.length > 0 ? formatCheckboxes(notes) : 'No new items. Listening...'}
+            </div>}
         </div>
     )
-}
 
-// Function to format notes
-function formatNotes(notes) {
-    let formattedNotes = '';
-    for (let i = 0; i < notes.length; i++) {
-        if (formattedNotes.includes(notes[i].trim())) {
-            continue;
+    // Function to format notes
+    function formatNotes(notes) {
+        var divs = []
+        for (let i = 0; i < notes.length; i++) {
+            let formattedNotes = notes[i].replace('-', '').trim() + '\n';
+            divs.push(<li>{formattedNotes}</li>)
         }
-        formattedNotes += '• ' + notes[i].replace('-', '').trim() + '\n';
+        return divs;
     }
-    return formattedNotes;
-}
 
-// Function to get note style based on notes
-function getNoteStyle(notes) {
-    return {
-        padding: 20, 
-        paddingBottom: 0, 
-        paddingTop: 0, 
-        color: notes && notes.length > 0 ? 'black':'#00000040', 
-        whiteSpace: 'pre-wrap', 
-        lineHeight: 2
+    // Function to format notes
+    function formatCheckboxes(notes) {
+        var divs = []
+        for (let i = 0; i < notes.length; i++) {
+            let formattedNotes = notes[i].replace('-', '').trim() + '\n';
+            divs.push(
+            <div style={{flexDirection: 'row', display: 'flex'}}>
+                <input 
+                    type='checkbox' 
+                    style={{width: 15}} 
+                    onChange={() => {
+                        if (!checkedP.includes(formattedNotes)) {
+                            setCheckedP(previous => [...previous, formattedNotes]);
+                        } else {
+                            setCheckedP(previous => previous.filter(item => item !== formattedNotes));
+                        }
+                    }}
+                />
+                <p 
+                    style={{
+                        marginLeft: 5, 
+                        color: checkedP.includes(formattedNotes) ? 'grey':'black', 
+                        fontStyle: checkedP.includes(formattedNotes) ? 'italic': ''
+                    }}
+                >
+                    {formattedNotes}
+                </p>
+            </div>
+            )
+        }
+        return divs;
+    }
+
+    // Function to get note style based on notes
+    function getNoteStyle(notes) {
+        return {
+            padding: 20, 
+            paddingBottom: 0, 
+            paddingTop: 0, 
+            color: notes && notes.length > 0 ? 'black':'#00000040', 
+            whiteSpace: 'pre-wrap', 
+            lineHeight: 2
+        }
+    }
+
+    // Function to get note style based on notes
+    function getCheckboxStyle(notes) {
+        return {
+            padding: 20, 
+            paddingBottom: 0, 
+            paddingTop: 0, 
+            color: notes && notes.length > 0 ? 'black':'#00000040', 
+            whiteSpace: 'pre-wrap', 
+        }
     }
 }
 
