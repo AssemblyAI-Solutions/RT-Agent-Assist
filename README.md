@@ -7,6 +7,9 @@ Our Real-Time Agent Assistant showcase demo shows the ease of integrating Assemb
 
 This MVP is perfect for contact centers that are looking to quickly implement AI solutions to improve their customer interactions and operational efficiency. It's an excellent example of how easily our APIs can be integrated into existing systems, providing immediate value with minimal setup time.
 
+## Live Demo
+[Loom Video](https://www.loom.com/share/de45de1ec4d34db2b7a4ebf3b74497a5?sid=fc1b6823-57ca-4aa5-ae7d-9ecdbf18974a)
+
 ## Benefits for Contact Centers
 - **Rapid Deployment:** Quick and easy integration with existing systems, minimizing downtime.
 - **Enhanced Agent Efficiency:** AI-driven insights and automated note-taking streamline call handling.
