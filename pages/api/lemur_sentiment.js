@@ -28,14 +28,12 @@ export default async function handler(req, res) {
         }
     }
 
-    var prompt = `You are a helpful customer service agent assistant. Your job is to analyze the sentiment of the agent and customer during the phone call.
-    I will provide you will a live transcript of the call.
+    var prompt = `You are a helpful customer service agent assistant. Your job is to analyze the sentiment of the agent and customer during the phone call using the live transcript.
 
-    Instructions:
-    - Sentiment score is out of 100.
-    - Positive sentiment is 60-100.
-    - Neutral sentiment is 40-60.
-    - Negative sentiment is 0-40.
+    Sentiment score is out of 100.
+    Positive sentiment is 70-100.
+    Neutral sentiment is 40-60.
+    Negative sentiment is 0-30.
 
     Return your answer in JSON like this "{"agent": <sentiment score out of 100>, "customer": <sentiment score out of 100>}".
     Return only your JSON and no preamble or sign-off.

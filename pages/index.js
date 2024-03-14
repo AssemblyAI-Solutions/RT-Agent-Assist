@@ -58,13 +58,22 @@ export default function Home() {
   const [enabled, setEnabled] = useState(false);
 
   // Lemur API calls loading state
-  const [lemurLoad, setLemurLoad] = useState(false);
+  const [lemurNotesLoad, setLemurNotesLoad] = useState(false);
+
+  // Lemur API calls loading state
+  const [lemurTasksLoad, setLemurTasksLoad] = useState(false);
+
+  // Lemur API calls loading state
+  const [lemurSentimentLoad, setLemurSentimentLoad] = useState(false);
+
+  // Keeps track of how much context Lemur has summarized, allows us to only send new transcript to Lemur
+  const [lemurSummarizedUntil, setLemurSummarizedUntil] = useState(0);
 
   // Modal state for editing prompts
   const [modalIsOpen, setIsOpen] = useState(false);
 
   // Custom prompts
-  const [notesPrompt, setNotesPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to take dilligent notes for the agent during the phone call.`);
+  const [notesPrompt, setNotesPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to take notes for the agent during the phone call.`);
   const [tasksPrompt, setTasksPrompt] = useState(`You are a helpful customer service agent assistant. Your job is to make suggestions to the agent during the phone call.
   
   Focus on the following rules for providing suggestions:
@@ -131,18 +140,19 @@ export default function Home() {
 
   // Lemur API calls, peroiodically when the transcript length is a multiple of 5
   useEffect(() => {
-    if (lemurLoad) return;
     if (fullTranscript.length === 0) {
       return;
     }
 
-    var filteredTranscript = filterTranscript(fullTranscript);
+    var filteredTranscript = filterTranscript();
+    filteredTranscript = lemurFilterTranscript(filteredTranscript)
 
     if (filteredTranscript.length % 5 === 0 && filteredTranscript.length > 0) {
       if (currentAudioTime !== 3600) {
         if (filteredTranscript.length === 0) {
           return;
         }
+        setLemurSummarizedUntil(currentAudioTime);
         lemurNotes(filteredTranscript);
         lemurTasks(filteredTranscript);
         lemurSentiment(filteredTranscript);
@@ -156,54 +166,66 @@ export default function Home() {
   
   // Lemur notes generation request
   function lemurNotes(t) {
-    setLemurLoad(true);
+    if (lemurNotesLoad) return;
+    setLemurNotesLoad(true);
 
     const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: notes, prompt: notesPrompt }) };
     fetch('/api/lemur_notes', options)
     .then(response => response.json())
     .then(response => {
       console.log(response)
-      setLemurLoad(false);
+      setLemurNotesLoad(false);
       if (response && response.notes && response.notes.length > 0) {
         // notes is an array of strings
-        setNotes(previousNotes => [...previousNotes, ...response.notes]);
+        var newNotes = response.notes.filter((note) => {
+          return !notes.includes(note)
+        })
+        setNotes(previousNotes => [...previousNotes, ...newNotes]);
       }
     })
     .catch(err => { 
       console.error(err); 
-      setLemurLoad(false);
+      setLemurNotesLoad(false);
     });
   }
 
   // Lemur suggestions generation request
   function lemurTasks(t) {
-    setLemurLoad(true);
+    if (lemurTasksLoad) return;
+    setLemurTasksLoad(true);
 
     const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t, previousNotes: tasks, prompt: tasksPrompt }) };
     fetch('/api/lemur_tasks', options)
     .then(response => response.json())
     .then(response => {
       console.log(response)
-      setLemurLoad(false);
+      setLemurTasksLoad(false);
       if (response && response.suggestions && response.suggestions.length > 0) {
         // tasks is an array of strings
-        setTasks(previousNotes => [...previousNotes, ...response.suggestions]);
+        var newTasks = response.suggestions.filter((task) => {
+          return !tasks.includes(task)
+        })
+        setTasks(previousTasks => [...previousTasks, ...newTasks]);
+
       }
     })
     .catch(err => {
       console.error(err)
-      setLemurLoad(false);
+      setLemurTasksLoad(false);
     });
   }
 
   // Lemur sentiment generation request, currently not used
   function lemurSentiment(t) {
+    if (lemurSentimentLoad) return;
+    setLemurSentimentLoad(true);
 
     const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript: t }) };
     fetch('/api/lemur_sentiment', options)
     .then(response => response.json())
     .then(response => {
       console.log(response)
+      setLemurSentimentLoad(false);
       if (response.response) {
         setSentiment(previousNotes => [...previousNotes, response.response]);
       }
@@ -387,6 +409,14 @@ export default function Home() {
       return item.audio_end < currentAudioTime*1000
     })
     // console.log(transcript, currentAudioTime, fullTranscript)
+    return transcript
+  }
+
+  // Filter the transcript based on the current audio time, this is to align the transcript / lemur outputs with the audio player
+  function lemurFilterTranscript(t) {
+    var transcript = t.filter((item) => {
+      return lemurSummarizedUntil*1000 < item.audio_end
+    })
     return transcript
   }
 
@@ -606,8 +636,8 @@ export default function Home() {
             {selectedCall == 3 && rightAudioComponent}
             <SentimentChart data={sentiment} width={750} height={200}></SentimentChart>
             {/* <Breakdown json={sentiment}></Breakdown> */}
-            <LemurOutput title={'AI Suggestions'} loading={lemurLoad} notes={tasks} checkboxes={true} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
-            <LemurOutput title={'AI Notes'} loading={lemurLoad} notes={notes} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
+            <LemurOutput title={'AI Suggestions'} loading={lemurTasksLoad} notes={tasks} checkboxes={true} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
+            <LemurOutput title={'AI Notes'} loading={lemurNotesLoad} notes={notes} promptEditClick={(title) => promptEditClick(title)}></LemurOutput>
           </div>
         </div>
         <Modal

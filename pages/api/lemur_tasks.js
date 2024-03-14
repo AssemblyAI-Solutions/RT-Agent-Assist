@@ -34,36 +34,33 @@ export default async function handler(req, res) {
     if (prompt && prompt != '') {
         finalPrompt = prompt
         finalPrompt += `
-        I will provide you will a live transcript of the call and a list of the previous suggestions you made.
-  
-        Instructions:
+        Use the live transcript of the call and a list of the previous suggestions. Do not repeat suggestions that have already been made.
+
+        More Instructions:
         - Provide your suggestions in an JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.
         - Return the JSON and no preamble or sign-off.
-        - Do not repeat suggestions you have already made.
         - If you have no suggestions, return an empty array.`
     }
     else {
-      finalPrompt = `You are a helpful customer service agent assistant. Your job is to make suggestions for the agent during the phone call.
-        I will provide you will a live transcript of the call and a list of the previous suggestions you made.
+      finalPrompt = `You are a helpful customer service agent assistant. Your job is to make suggestions for the agent during the phone call. Do not repeat suggestions that have already been made.
 
         You must only give the following suggestions if one of the following rules is true:
         - If customer says they live in an apartment or home, suggest that the agent ask if they own or rent.
         - If a customer says they are using an alternative service that isn't AT&T,suggest that the agent ask them what they don't like about their current service.
         - If a customer wants internet or cable service, suggest that the agent ask them if they'd be interested in bundling other services.
         
-        Instructions:
-        - Only include a suggestion if it meets the given rules.
-        - Do not repeat suggestions you have already made.
+        Use the live transcript of the call and a list of the previous suggestions. Do not repeat suggestions that have already been made.
+
+        More Instructions:
         - Provide your suggestions in an JSON array format like this: {"suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]}.
         - Return the JSON and no preamble or sign-off.
-        - If you have no suggestions, return an empty array.
-      `
+        - If you have no suggestions, return an empty array.`
     }
 
     if (previousNotes.length > 0) {
-        finalPrompt += 'Previous Suggestions:\n'
+      inputText += '\nPrevious Agent Suggestions:\n'
         for (var i = 0; i < previousNotes.length; i++) {
-          finalPrompt += previousNotes[i] + '\n'
+          inputText += previousNotes[i] + '\n'
         }
     }
     
